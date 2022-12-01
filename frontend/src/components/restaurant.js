@@ -1,10 +1,111 @@
-import React from "react";
-import { Switch, Route, Link } from "react-router-dom";
+import { React, useEffect, useState } from "react";
+import { Switch, Route, Link, useParams } from "react-router-dom";
 import "bootstrap/dist/css/bootstrap.min.css"
+import RestaurantDataService from "../services/restaurant"
 
-const Restaurant = () => {
+const Restaurant = (props) => {
+    const initialRestaurantState = {
+        id: null,
+        name: "",
+        address: {},
+        cuisine: "",
+        reviews: []
+    };
+    const [restaurant, setRestaurant] = useState(initialRestaurantState);
+
+    const { id } = useParams();
+
+    const getRestaurant = (id) => {
+        RestaurantDataService.get(id)
+        .then(response => {
+            setRestaurant(response.data);
+            console.log(response.data);
+        })
+        .catch(e => {
+            console.log(e);
+        });
+    };
+
+    useEffect(() => {
+        getRestaurant(id);
+    }, [id])
+
+    const deleteReview = (reviewId, index) => {
+        RestaurantDataService.deleteReview(reviewId)
+        .then(response => {
+            setRestaurant((prevState) => {
+                // removing by splicing review at index
+                prevState.reviews.splice(index, 1)
+                return({
+                    // return the new array to setRestaurant
+                    ...prevState
+                })
+            })
+        })
+        .catch(e => {
+            console.log(e);
+        });
+    };
+
     return (
-        <h1>Restaurant</h1>
+        <div>
+            { restaurant ? (
+                <div>
+                    <h5>{ restaurant.name }</h5>
+                    <p>
+                        <strong>Cuisine: </strong>{ restaurant.cuisine }
+                        <br />
+                        <strong>Address: </strong>{ restaurant.address.building } { restaurant.address.street }, { restaurant.address.zipcode }
+
+                    </p>
+                    <Link to={"/restaurants/" + id + "/review"} className = "btn btn-primary">
+                        Add Review
+                    </Link>
+                    <h4>Reviews</h4>
+                    <div className="row">
+                        { restaurant.reviews.length > 0 ? (
+                            restaurant.reviews.map((review,index) => {
+                                return(
+                                    <div className="col-lg-4 pb-1" key={index}>
+                                        <div className="card">
+                                            <div className="card-body">
+                                                <p className="card-text">
+                                                    {review.text}
+                                                    <br/>
+                                                    <strong>User: </strong>{review.name}
+                                                    <br/>
+                                                    <strong>Date: </strong>{review.date}
+                                                </p>
+                                                { props.user && props.user.id === review.user_id &&
+                                                    <div className="row">
+                                                        <a onClick={() => deleteReview(review._id, index)} className="btn btn-primary col-lg-5 mx-1 mb-1">Delete</a>
+                                                        <Link to={{
+                                                            pathname: "/restaurants/" + id + "/review",
+                                                            state: {
+                                                                currentReview: review
+                                                            }
+                                                        }} className="btn btn-primary col-lg-5 mx-1 mb-1">Edit</Link>
+                                                    </div>
+                                                }
+                                            </div>
+                                        </div>
+                                    </div>
+                                )
+                            })
+                        ) : (
+                            <div className="col-sm-4">
+                                <p>No reviews yet</p>
+                            </div>
+                        )}
+                    </div>
+                </div>
+            ) : (
+                <div>
+                    <br />
+                    <p>No restaurant selected</p>
+                </div>
+            )}
+        </div>
     );
 }
 

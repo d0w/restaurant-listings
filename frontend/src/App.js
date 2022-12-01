@@ -52,7 +52,7 @@ function App() {
 
       <div className="container mt-3">
         <Routes>
-          <Route exact path="/restaurants" element={<RestaurantsList />} />
+          <Route exact path="/restaurants/" element={<RestaurantsList />} />
           <Route
             path="/restaurants/:id/review"
             element={
@@ -71,8 +71,6 @@ function App() {
               <Login login={login} />
             }
           /> 
-
-
 
           {/* <Route
             path="/restaurants/:id/review"
