@@ -1,4 +1,7 @@
 import http from "../http-common";
+// http common uses axios to set the base url
+// then use axios to use http requests using the urls
+// defined in the REST Api
 
 class RestaurantDataService {
     getAll(page = 0) {

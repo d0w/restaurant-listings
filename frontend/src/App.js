@@ -15,6 +15,7 @@ function App() {
   //   setUser(user);
   // }
   const login = async (user = null) => {
+    console.log(user);
     setUser(user);
   };
 
@@ -68,7 +69,7 @@ function App() {
           <Route
             path="/login"
             element={
-              <Login login={login} />
+              <Login log={login} />
             }
           /> 
 
