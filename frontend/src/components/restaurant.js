@@ -1,5 +1,5 @@
 import { React, useEffect, useState } from "react";
-import { Switch, Route, Link, useParams } from "react-router-dom";
+import { Link, useParams } from "react-router-dom";
 import "bootstrap/dist/css/bootstrap.min.css"
 import RestaurantDataService from "../services/restaurant"
 
@@ -31,11 +31,14 @@ const Restaurant = (props) => {
     }, [id])
 
     const deleteReview = (reviewId, index) => {
-        RestaurantDataService.deleteReview(reviewId)
+        RestaurantDataService.deleteReview(reviewId, props.user.id)
         .then(response => {
             setRestaurant((prevState) => {
+                console.log(prevState.reviews);
                 // removing by splicing review at index
                 prevState.reviews.splice(index, 1)
+               //prevState.reviews = prevState.reviews.slice(0,index).concat(prevState.reviews.slice(-index));
+                console.log(prevState.reviews);
                 return({
                     // return the new array to setRestaurant
                     ...prevState
@@ -78,13 +81,13 @@ const Restaurant = (props) => {
                                                 </p>
                                                 { props.user && props.user.id === review.user_id &&
                                                     <div className="row">
+
                                                         <a onClick={() => deleteReview(review._id, index)} className="btn btn-primary col-lg-5 mx-1 mb-1">Delete</a>
-                                                        <Link to={{
-                                                            pathname: "/restaurants/" + id + "/review",
-                                                            state: {
+                                                        <Link to={"/restaurants/" + id + "/review"}
+                                                            state={{
                                                                 currentReview: review
-                                                            }
-                                                        }} className="btn btn-primary col-lg-5 mx-1 mb-1">Edit</Link>
+                                                            }}  
+                                                            className="btn btn-primary col-lg-5 mx-1 mb-1">Edit</Link>
                                                     </div>
                                                 }
                                             </div>
